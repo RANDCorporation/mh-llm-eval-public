@@ -1,0 +1,77 @@
+# Model registry for the mental health AI safety evaluation.
+#
+# provider values and required env vars:
+#   azure_openai  — AZURE_OPENAI_API_KEY, AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_API_VERSION
+#   aws_bedrock   — AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION
+#   google_gemini — GOOGLE_API_KEY
+#
+# model_id is the provider-specific identifier (deployment name for Azure, ARN for Bedrock, etc.)
+# Set rate_limit_rpm conservatively; the pipeline throttles automatically.
+
+# --- Models used in the paper ---
+
+models:
+
+  # GPT-5.3 (ChatGPT default, March 2026) — Azure OpenAI
+  - id: gpt-5.3
+    name: GPT 5.3
+    provider: azure_openai
+    model_id: gpt-5.3-chat-2026-03-03-global   # Azure deployment name; update to your deployment
+    rate_limit_rpm: 120
+    max_tokens: 16384
+    pricing:
+      input_per_1m: 1.75
+      output_per_1m: 14.0
+    api_compat:
+      no_temperature: true          # gpt-5.x does not accept a temperature parameter
+      use_max_completion_tokens: true  # gpt-5.x uses max_completion_tokens, not max_tokens
+
+  # Claude Sonnet 4.6 (Claude.ai default, March 2026) — AWS Bedrock
+  - id: claude-sonnet-4.6
+    name: Claude Sonnet 4.6
+    provider: aws_bedrock
+    model_id: us.anthropic.claude-sonnet-4-6   # US inference profile
+    rate_limit_rpm: 60
+    max_tokens: 8192
+    pricing:
+      input_per_1m: 3.0
+      output_per_1m: 15.0
+
+  # Gemini 3 Flash Preview (Gemini default, March 2026) — Google Gemini
+  - id: gemini-3-flash-preview
+    name: Gemini 3 Flash Preview
+    provider: google_gemini
+    model_id: gemini-3-flash-preview
+    rate_limit_rpm: 60
+    max_tokens: 8192
+    pricing:
+      input_per_1m: 0.25
+      output_per_1m: 1.5
+
+  # Llama 4 Scout (Meta AI default, March 2026) — AWS Bedrock
+  - id: llama-4-scout
+    name: Llama 4 Scout 17B
+    provider: aws_bedrock
+    model_id: us.meta.llama4-scout-17b-instruct-v1:0
+    rate_limit_rpm: 60
+    max_tokens: 8192
+    pricing:
+      input_per_1m: 0.17
+      output_per_1m: 0.66
+
+  # --- Judge model (GPT-4o Mini — used by evaluate.py, not generate.py) ---
+  - id: gpt-4o-mini
+    name: GPT-4o Mini
+    provider: azure_openai
+    model_id: gpt-4o-mini-2024-07-18   # Azure deployment name; update to your deployment
+    rate_limit_rpm: 120
+    max_tokens: 16384
+    pricing:
+      input_per_1m: 0.15
+      output_per_1m: 0.60
+
+# provider_configs: optional gateway-level rate caps (needed when multiple models
+# share one endpoint and the combined throughput must stay under a total RPM cap).
+# provider_configs:
+#   azure_openai:
+#     rate_limit_rpm: 350   # total gateway cap shared across all Azure models
