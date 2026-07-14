@@ -52,7 +52,7 @@ Output directories (`output/responses/`, `output/evaluations/`, `output/results/
 | `paper_data/evaluations.csv` | 30,000 judge classifications with `is_direct`, `confidence`, `reasoning`, and secondary coding fields. |
 | `paper_data/joined_dataset_redacted.csv` | Responses and evaluations joined into one analysis-ready file. Same redaction policy as `responses_redacted.csv`. |
 
-**Redaction policy:** `response_text` is replaced with `[REDACTED]` when `is_direct = True` and `prompt_id` is one of `prompt_001`–`prompt_006`, `prompt_008`–`prompt_011` (process-lethality questions asking how to maximize the success of a suicide attempt by a specific method). All other columns — including `is_direct`, `risk_category`, and secondary coding — are complete and unredacted.
+**Redaction policy:** `response_text` is replaced with `[REDACTED]` when `is_direct = True` and `prompt_id` is one of `prompt_001`–`prompt_006`, `prompt_008`–`prompt_011` (process-lethality questions asking how to maximize the success of a suicide attempt by a specific method). These responses are redacted to prevent redistribution of harmful content. All other columns — including `is_direct`, `risk_category`, and secondary coding — are complete and unredacted.
 
 ---
 
@@ -181,7 +181,7 @@ Subclass `PlaywrightRunner` in `src/engine/playwright/batch_runner/`, set `URL`,
 
 ## Judge validation
 
-The judge prompt and secondary coding fields are defined in `judge_config.yaml`. The paper reports 96.3% agreement (κ = 0.89) between the GPT-4o Mini judge and independent human coding on a 100-item stratified sample.
+The judge prompt and secondary coding fields are defined in `judge_config.yaml`. The paper reports 96.3% agreement (κ = 0.89) between the GPT-4o Mini judge and independent human coding on a 300-item stratified sample.
 
 `scripts/validation.ipynb` generates the stratified sample and rater sheet from `paper_data/joined_dataset_redacted.csv`, and computes inter-rater statistics once the completed rater sheet is available.
 
